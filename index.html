@@ -1,207 +1,127 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kalkulator przesyłek</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-  body {
-    font-family: 'Roboto', sans-serif;
-    background: linear-gradient(135deg, #6dd5ed, #2193b0);
-    margin: 0; padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    color: #333;
-  }
-  .container {
-    background: white;
-    padding: 30px 25px;
-    border-radius: 15px;
-    box-shadow: 0 0 25px rgba(0,0,0,0.15);
-    width: 350px;
-    text-align: center;
-  }
-  h2 {
-    margin-bottom: 20px;
-  }
-  input[type=password], input[type=number] {
-    width: 100%;
-    padding: 10px;
-    margin: 12px 0 20px 0;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-  }
-  button {
-    background: #2193b0;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  button:hover {
-    background: #176c91;
-  }
-  .error {
-    color: red;
-    margin-top: 10px;
-  }
-  .success {
-    color: green;
-    margin-top: 10px;
-  }
-  .hidden {
-    display: none;
-  }
-  .carrier {
-    cursor: pointer;
-    margin: 15px 0;
-    padding: 10px;
-    border-radius: 10px;
-    background: #f0f0f0;
-    transition: background-color 0.3s;
-    user-select: none;
-  }
-  .carrier:hover {
-    background: #d0e6f7;
-  }
-  .carrier img {
-    max-width: 150px;
-    margin-bottom: 8px;
-  }
-  .back-btn {
-    margin-top: 20px;
-    background: #999;
-  }
-  .back-btn:hover {
-    background: #666;
-  }
-  label {
-    display: block;
-    text-align: left;
-    margin-bottom: 6px;
-    font-weight: 600;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kalkulator kosztów przesyłki</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+    body {
+      margin: 0;
+      background-color: #0d1117;
+      color: #c9d1d9;
+      font-family: 'Montserrat', sans-serif;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      align-items: center;
+    }
+    .container {
+      max-width: 480px;
+      width: 100%;
+      padding: 20px;
+    }
+    .login-box, .carrier-selection {
+      background-color: #161b22;
+      border-radius: 10px;
+      padding: 30px 25px;
+      box-shadow: 0 4px 15px rgb(0 0 0 / 0.7);
+      margin: 40px auto;
+      text-align: center;
+    }
+    input[type="password"] {
+      width: 100%;
+      max-width: 300px;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1px solid #30363d;
+      background-color: #0d1117;
+      color: #c9d1d9;
+      font-size: 16px;
+      outline: none;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px 0;
+      width: 100%;
+      max-width: 300px;
+      border: none;
+      border-radius: 8px;
+      background-color: #238636;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .error-message {
+      color: #f85149;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+.carrier-selection {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.carrier-logos {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  width: 100%;
+}
+    .carrier {
+      cursor: pointer;
+      width: 120px;
+      height: 120px;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .carrier img {
+      max-width: 80px;
+      max-height: 80px;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <div class="login-box" id="loginBox">
+      <h1>Zaloguj się</h1>
+      <input type="password" id="passwordInput" placeholder="Wpisz hasło" />
+      <button onclick="login()">Zaloguj</button>
+      <div id="loginError" class="error-message"></div>
+    </div>
 
-<div class="container" id="login-screen">
-  <h2>Zaloguj się</h2>
-  <input type="password" id="password" placeholder="Wprowadź hasło" />
-  <button onclick="checkPassword()">Zaloguj</button>
-  <div id="login-msg"></div>
-</div>
-
-<div class="container hidden" id="carrier-select">
+    <div class="carrier-selection" id="carrierSelection">
   <h2>Wybierz przewoźnika</h2>
-<div class="carrier" onclick="showCalculator('fedex')">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/FedEx_Express_logo.svg/256px-FedEx_Express_logo.svg.png" alt="FedEx logo" />
-  FedEx
-</div>
-<div class="carrier" onclick="showCalculator('suus')">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Rohlig_SUUS_logo.png" alt="Rohlig SUUS logo" />
-  Rohlig SUUS
-</div>
-
-  <button class="back-btn" onclick="backToLogin()">Wyloguj się</button>
+  <div class="carrier-logos">
+    <div class="carrier" onclick="window.location.href='fedex.html'">
+      <img src="logo_fedex.png" alt="FedEx logo" />
+    </div>
+    <div class="carrier" onclick="window.location.href='suus.html'">
+      <img src="logo_rohling_suus.png" alt="Rohling Suus logo" />
+    </div>
+  </div>
 </div>
 
-<div class="container hidden" id="calculator-screen">
-  <h2 id="calc-title">Kalkulator</h2>
-  
-  <label for="weight">Waga przesyłki (kg):</label>
-  <input type="number" id="weight" min="0" step="0.01" placeholder="np. 2.5" />
-  
-  <label for="distance">Odległość (km):</label>
-  <input type="number" id="distance" min="0" step="1" placeholder="np. 150" />
-  
-  <button onclick="calculateCost()">Oblicz koszt</button>
-  
-  <div id="result" style="margin-top:20px; font-weight:700;"></div>
-  
-  <button class="back-btn" onclick="backToCarrier()">Wybierz innego przewoźnika</button>
-</div>
-
-<script>
-  const PASSWORD = 'qweasdzxc';
-
-  function checkPassword() {
-    const pass = document.getElementById('password').value;
-    const msg = document.getElementById('login-msg');
-    if (pass === PASSWORD) {
-      msg.innerHTML = '<div class="success">Pomyślnie zalogowano!</div>';
-      document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('carrier-select').classList.remove('hidden');
-    } else {
-      msg.innerHTML = '<div class="error">Błędne hasło!</div>';
+  <script>
+    function login() {
+      const password = document.getElementById('passwordInput').value;
+      const errorDiv = document.getElementById('loginError');
+      if (password === '123') {
+        errorDiv.textContent = '';
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('carrierSelection').style.display = 'flex';
+      } else {
+        errorDiv.textContent = 'Błędne hasło. Spróbuj ponownie.';
+      }
     }
-  }
-
-  function backToLogin() {
-    document.getElementById('password').value = '';
-    document.getElementById('login-msg').innerHTML = '';
-    document.getElementById('carrier-select').classList.add('hidden');
-    document.getElementById('calculator-screen').classList.add('hidden');
-    document.getElementById('login-screen').classList.remove('hidden');
-  }
-
-  function showCalculator(carrier) {
-    document.getElementById('carrier-select').classList.add('hidden');
-    document.getElementById('calculator-screen').classList.remove('hidden');
-    document.getElementById('result').innerHTML = '';
-    document.getElementById('weight').value = '';
-    document.getElementById('distance').value = '';
-
-    const title = document.getElementById('calc-title');
-    if (carrier === 'fedex') {
-      title.textContent = 'Kalkulator przesyłek - FedEx';
-      window.currentCarrier = 'fedex';
-    } else if (carrier === 'suus') {
-      title.textContent = 'Kalkulator przesyłek - Rohlig SUUS';
-      window.currentCarrier = 'suus';
-    }
-  }
-
-  function backToCarrier() {
-    document.getElementById('calculator-screen').classList.add('hidden');
-    document.getElementById('carrier-select').classList.remove('hidden');
-  }
-
-  function calculateCost() {
-    const weight = parseFloat(document.getElementById('weight').value);
-    const distance = parseInt(document.getElementById('distance').value);
-    const result = document.getElementById('result');
-
-    if (isNaN(weight) || weight <= 0) {
-      result.style.color = 'red';
-      result.textContent = 'Podaj poprawną wagę przesyłki.';
-      return;
-    }
-    if (isNaN(distance) || distance <= 0) {
-      result.style.color = 'red';
-      result.textContent = 'Podaj poprawną odległość.';
-      return;
-    }
-
-    let cost = 0;
-    if (window.currentCarrier === 'fedex') {
-      // przykładowa cena: 10 zł bazowo + 3 zł/kg + 0,5 zł/km
-      cost = 10 + (3 * weight) + (0.5 * distance);
-    } else if (window.currentCarrier === 'suus') {
-      // inna przykładowa cena: 12 zł bazowo + 2.5 zł/kg + 0.7 zł/km
-      cost = 12 + (2.5 * weight) + (0.7 * distance);
-    }
-
-    result.style.color = 'green';
-    result.textContent = `Szacowany koszt przesyłki: ${cost.toFixed(2)} zł`;
-  }
-</script>
-
+  </script>
 </body>
 </html>
